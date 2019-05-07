@@ -6,7 +6,7 @@
 
     <groupId>me.ShakeforProtein</groupId>
     <artifactId>LazyTools</artifactId>
-    <version>1.0.1-114</version>
+    <version>1.0.2-114</version>
     <packaging>jar</packaging>
 
     <name>LazyTools</name>

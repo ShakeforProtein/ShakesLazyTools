@@ -68,6 +68,7 @@ public final class LazyTools extends JavaPlugin implements Listener {
                 ItemStack fItem = itemFrame.getItem();
                 Block b1 = target;
                 String l1 = "Error";
+                String l2 = "Error";
                 if (which.equalsIgnoreCase("BUY")) {
                     b1 = target.getRelative(0, 1, 0);
                     l1 = "[Buy]";
@@ -103,26 +104,35 @@ public final class LazyTools extends JavaPlugin implements Listener {
                     Sign s1 = (Sign) b1.getState();
 
                     s1.setLine(0, l1);
-                    s1.setLine(1, "1");
                     String newVal = fItem.getType().name();
                     double buy = 9999999;
                     double sell = 0.01;
+                    String buyQty = "1";
+                    String sellQty = "1";
                     for (String keyName : getConfig().getConfigurationSection("value").getKeys(false)) {
                         if (keyName.equalsIgnoreCase(newVal)) {
                             newVal = keyName;
                             buy = getConfig().getDouble("value." + keyName + ".buy");
                             sell = getConfig().getDouble("value." + keyName + ".sell");
+                            buyQty = getConfig().getString("value." + keyName + ".buyQty");
+                            sellQty = getConfig().getString("value." + keyName + ".sellQty");
                             if (getConfig().get("value." + keyName + ".essName") != null) {
                                 newVal = getConfig().getString("value." + keyName + ".essName");
                             }
                             break;
                         }
                     }
+
+                    s1.setLine(1, "1");
                     s1.setLine(2, newVal);
+
                     if (which.equalsIgnoreCase("BUY")) {
                         s1.setLine(3, "$" + buy);
+                        s1.setLine(1, "" + buyQty);
                     } else if (which.equalsIgnoreCase("SELL")) {
                         s1.setLine(3, "$" + sell);
+                        s1.setLine(1, "" + sellQty);
+
                     }
 
                     s1.update();
