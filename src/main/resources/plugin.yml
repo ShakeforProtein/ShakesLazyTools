@@ -1,0 +1,14 @@
+name: LazyTools
+version: ${project.version}
+main: me.shakeforprotein.lazytools.LazyTools
+api-version: 1.13
+authors: [ShakeforProtein]
+description: A bunch of tools to make shakes life easier
+
+permissions:
+  lazytools.editsigns:
+    default: op
+
+commands:
+  LazyToolsReload:
+    permission: lazytools.reload
