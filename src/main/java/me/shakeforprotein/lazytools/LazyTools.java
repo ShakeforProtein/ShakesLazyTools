@@ -1,6 +1,7 @@
 package me.shakeforprotein.lazytools;
 
 import Commands.ReloadCommand;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -82,6 +83,14 @@ public final class LazyTools extends JavaPlugin implements Listener {
 
 
                     ArrayList<String> signTypes = new ArrayList<String>();
+                    if (Double.parseDouble(Bukkit.getVersion().split(" ")[2].split("\\.")[1].replace(")", "")) > 13) {
+                        signTypes.add("ACACIA_WALL_SIGN");
+                        signTypes.add("BIRCH_WALL_SIGN");
+                        signTypes.add("OAK_WALL_SIGN");
+                        signTypes.add("DARK_OAK_WALL_SIGN");
+                        signTypes.add("JUNGLE_WALL_SIGN");
+                        signTypes.add("SPRUCE_WALL_SIGN");
+                    }
                     signTypes.add("WALL_SIGN");
 
 
@@ -117,13 +126,13 @@ public final class LazyTools extends JavaPlugin implements Listener {
                         }
                     }
 
-                    s1.setLine(1, "1");
                     s1.setLine(2, newVal);
 
                     if (which.equalsIgnoreCase("BUY")) {
                         s1.setLine(3, "$" + buy);
                         s1.setLine(1, "" + buyQty);
                         if(buy < 0){
+                            p.sendMessage("Buy is less than 0");
                             s1.setLine(0, "+=+=+=+=+=+=+");
                             s1.setLine(3, "+=+=+=+=+=+=+");
                             s1.setLine(1, "&3Item &4Not");

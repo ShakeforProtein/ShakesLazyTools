@@ -16,6 +16,7 @@ public class ReloadCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
         pl.reloadConfig();
+        sender.sendMessage("[Lazy Tools] Config Reloaded");
         return true;
     }
 }
