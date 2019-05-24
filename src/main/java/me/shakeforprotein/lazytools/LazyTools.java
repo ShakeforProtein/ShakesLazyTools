@@ -71,10 +71,10 @@ public final class LazyTools extends JavaPlugin implements Listener {
                 String l2 = "Error";
                 if (which.equalsIgnoreCase("BUY")) {
                     b1 = target.getRelative(0, 1, 0);
-                    l1 = "[Buy]";
+                    l1 = "&1[Buy]";
                 } else if (which.equalsIgnoreCase("SELL")) {
                     b1 = target.getRelative(0, -1, 0);
-                    l1 = "[Sell]";
+                    l1 = "&1[Sell]";
                 } else {
                 }
 
@@ -82,12 +82,6 @@ public final class LazyTools extends JavaPlugin implements Listener {
 
 
                     ArrayList<String> signTypes = new ArrayList<String>();
-                    signTypes.add("ACACIA_WALL_SIGN");
-                    signTypes.add("BIRCH_WALL_SIGN");
-                    signTypes.add("OAK_WALL_SIGN");
-                    signTypes.add("DARK_OAK_WALL_SIGN");
-                    signTypes.add("JUNGLE_WALL_SIGN");
-                    signTypes.add("SPRUCE_WALL_SIGN");
                     signTypes.add("WALL_SIGN");
 
 
@@ -129,10 +123,21 @@ public final class LazyTools extends JavaPlugin implements Listener {
                     if (which.equalsIgnoreCase("BUY")) {
                         s1.setLine(3, "$" + buy);
                         s1.setLine(1, "" + buyQty);
+                        if(buy < 0){
+                            s1.setLine(0, "+=+=+=+=+=+=+");
+                            s1.setLine(3, "+=+=+=+=+=+=+");
+                            s1.setLine(1, "&3Item &4Not");
+                            s1.setLine(2, "&2For Purcxhase");
+                        }
                     } else if (which.equalsIgnoreCase("SELL")) {
                         s1.setLine(3, "$" + sell);
                         s1.setLine(1, "" + sellQty);
-
+                        if(sell < 0){
+                            s1.setLine(0, "+=+=+=+=+=+=+");
+                            s1.setLine(3, "+=+=+=+=+=+=+");
+                            s1.setLine(1, "&3Item &4Not");
+                            s1.setLine(2, "&2For Sale");
+                        }
                     }
 
                     s1.update();
