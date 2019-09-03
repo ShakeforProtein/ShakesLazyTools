@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
@@ -23,6 +24,9 @@ import java.util.*;
 public final class LazyTools extends JavaPlugin implements Listener {
 
 
+    public HashMap stareHash = new HashMap<String, Integer>();
+    public HashMap counterHash = new HashMap<String, Integer>();
+
     @Override
     public void onEnable() {
         // Plugin startup logic
@@ -30,8 +34,11 @@ public final class LazyTools extends JavaPlugin implements Listener {
         this.getConfig().options().copyDefaults(true);
         this.getConfig().set("version", this.getDescription().getVersion());
         this.saveConfig();
-
         this.getCommand("LazyToolsReload").setExecutor(new ReloadCommand(this));
+        //this.getCommand("renamecaveblock").setExecutor(new RenameCaveblock(this));
+        //stareHash.clear();
+        //counterHash.clear();
+        //activateStareCheck();
     }
 
     @Override
@@ -95,8 +102,8 @@ public final class LazyTools extends JavaPlugin implements Listener {
 
 
                     int i = 0;
-                    for(i=0; i < signTypes.toArray().length; i++){
-                        if(signTypes.get(i).contains(handSign.name().toUpperCase().split(" ")[0].split("_")[0])){
+                    for (i = 0; i < signTypes.toArray().length; i++) {
+                        if (signTypes.get(i).contains(handSign.name().toUpperCase().split(" ")[0].split("_")[0])) {
                             handSign = Material.getMaterial(signTypes.get(i));
                             break;
                         }
@@ -107,6 +114,18 @@ public final class LazyTools extends JavaPlugin implements Listener {
                     Sign s1 = (Sign) b1.getState();
 
                     s1.setLine(0, l1);
+
+
+                    if(fItem.getType().toString().contains(("Potion").toUpperCase())){
+                        ItemStack potion = fItem;
+                        PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
+                        p.sendMessage(potion.getType() + "");
+                        p.sendMessage("Extended: " + potionMeta.getBasePotionData().isExtended());
+                        p.sendMessage("Upgraded: " + potionMeta.getBasePotionData().isUpgraded());
+                        p.sendMessage("Effects: " + potionMeta.getCustomEffects().toString());
+                    }
+
+
                     String newVal = fItem.getType().name();
                     double buy = 9999999;
                     double sell = 0.01;
@@ -114,15 +133,17 @@ public final class LazyTools extends JavaPlugin implements Listener {
                     String sellQty = "1";
                     for (String keyName : getConfig().getConfigurationSection("value").getKeys(false)) {
                         if (keyName.equalsIgnoreCase(newVal)) {
-                            newVal = keyName;
-                            buy = getConfig().getDouble("value." + keyName + ".buy");
-                            sell = getConfig().getDouble("value." + keyName + ".sell");
-                            buyQty = getConfig().getString("value." + keyName + ".buyQty");
-                            sellQty = getConfig().getString("value." + keyName + ".sellQty");
-                            if (getConfig().get("value." + keyName + ".essName") != null) {
-                                newVal = getConfig().getString("value." + keyName + ".essName");
+                            if (!keyName.toUpperCase().contains("POTION")) {
+                                newVal = keyName;
+                                buy = getConfig().getDouble("value." + keyName + ".buy");
+                                sell = getConfig().getDouble("value." + keyName + ".sell");
+                                buyQty = getConfig().getString("value." + keyName + ".buyQty");
+                                sellQty = getConfig().getString("value." + keyName + ".sellQty");
+                                if (getConfig().get("value." + keyName + ".essName") != null) {
+                                    newVal = getConfig().getString("value." + keyName + ".essName");
+                                }
+                                break;
                             }
-                            break;
                         }
                     }
 
@@ -131,7 +152,7 @@ public final class LazyTools extends JavaPlugin implements Listener {
                     if (which.equalsIgnoreCase("BUY")) {
                         s1.setLine(3, "$" + buy);
                         s1.setLine(1, "" + buyQty);
-                        if(buy < 0){
+                        if (buy < 0) {
                             p.sendMessage("Buy is less than 0");
                             s1.setLine(0, "+=+=+=+=+=+=+");
                             s1.setLine(3, "+=+=+=+=+=+=+");
@@ -141,7 +162,7 @@ public final class LazyTools extends JavaPlugin implements Listener {
                     } else if (which.equalsIgnoreCase("SELL")) {
                         s1.setLine(3, "$" + sell);
                         s1.setLine(1, "" + sellQty);
-                        if(sell < 0){
+                        if (sell < 0) {
                             s1.setLine(0, "+=+=+=+=+=+=+");
                             s1.setLine(3, "+=+=+=+=+=+=+");
                             s1.setLine(1, "&3Item &4Not");
@@ -160,5 +181,41 @@ public final class LazyTools extends JavaPlugin implements Listener {
                 }
             }
         }
+    }
+
+    private void activateStareCheck(){
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+            @Override
+            public void run() {
+                for(Player p : Bukkit.getOnlinePlayers()){
+                    if(!stareHash.containsKey(p.getUniqueId().toString())){
+                        stareHash.put(p.getUniqueId().toString(), p.getLocation());
+                        counterHash.put(p.getUniqueId().toString(), 0);
+                        p.sendMessage("Added to hash");
+                    }
+
+                    else if((int)counterHash.get(p.getUniqueId().toString()) == 0) {
+                        if(p.getLocation().equals(stareHash.get(p.getUniqueId().toString()))){
+                            if(p.getTargetBlockExact(5) != null) {
+                                p.sendMessage(p.getTargetBlockExact(5).getType().name());
+                                counterHash.replace(p.getUniqueId().toString(), 1);
+                            }
+                        else p.sendMessage("You moved");
+                        }
+                        else{
+                            counterHash.replace(p.getUniqueId().toString(), 0);
+                        }
+                    }
+                    else if((int)counterHash.get(p.getUniqueId().toString()) == 5) {
+                        counterHash.remove(p.getUniqueId().toString());
+                    }
+                    if(!p.getLocation().equals(stareHash.get(p.getUniqueId().toString()))){
+                        counterHash.remove(p.getUniqueId().toString());
+                    }
+                    counterHash.replace(p.getUniqueId().toString(), (int) counterHash.get(p.getUniqueId().toString()) +1);
+                    p.sendMessage(counterHash.get(p.getUniqueId().toString()) + "");
+                }
+            }
+        }, 100L, 60L);
     }
 }
