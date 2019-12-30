@@ -1,3 +1,5 @@
+bstatsIntegration: true
+
 value:
   BEDROCK:
     buy: 2000000

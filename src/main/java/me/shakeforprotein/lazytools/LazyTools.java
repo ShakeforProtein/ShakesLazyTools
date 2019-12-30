@@ -1,6 +1,7 @@
 package me.shakeforprotein.lazytools;
 
 import Commands.ReloadCommand;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -35,10 +36,11 @@ public final class LazyTools extends JavaPlugin implements Listener {
         this.getConfig().set("version", this.getDescription().getVersion());
         this.saveConfig();
         this.getCommand("LazyToolsReload").setExecutor(new ReloadCommand(this));
-        //this.getCommand("renamecaveblock").setExecutor(new RenameCaveblock(this));
-        //stareHash.clear();
-        //counterHash.clear();
-        //activateStareCheck();
+        if(getConfig().get("bstatsIntegration") != null) {
+            if (getConfig().getBoolean("bstatsIntegration")) {
+                Metrics metrics = new Metrics(this);
+            }
+        }
     }
 
     @Override
